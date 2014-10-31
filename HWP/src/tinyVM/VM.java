@@ -77,11 +77,17 @@ public class VM {
 			return value;
 		}
 		case "MOV": {
-			System.out.println("MOV gefunden!");
+			
+			int dest = Integer.parseInt(commandSplitted[1]);
+			int source = Integer.parseInt(commandSplitted[2]);
+		
+			
 			return opCode;
 		}
 		case "ADD": {
 			// ADD Rx,Ry => Rx = Rx + Ry
+			
+			
 			return opCode;
 		}
 		case "SUB": {
@@ -132,7 +138,7 @@ public class VM {
 	public void executeOpCode(int[] filledMemory) {
 		// go to first memory entry
 		programCounter = 0;
-		// 
+		//
 		for (programCounter = 0; programCounter < 4095; programCounter++) {
 			int command = filledMemory[programCounter];
 			switch (command & 15) {
@@ -141,11 +147,62 @@ public class VM {
 			}
 			// LOAD
 			case 1: {
-				System.out.println("LOAD");
+				// Mask value
+				register[0] = command & 65520;
+				// shift back
+				register[0] = register[0] >> 5;
 				break;
 			}
+			// MOV
+			case 2: {
 
 			}
+			// ADD
+			case 3: {
+
+			}
+			// SUB
+			case 4: {
+
+			}
+			// MUL
+			case 5: {
+
+			}
+			// DIV
+			case 6: {
+
+			}
+			// PUSH
+			case 7: {
+
+			}
+			// POP
+			case 8: {
+
+			}
+			// Jump
+			case 9: {
+
+			}
+			// Jump if zero
+			case 10: {
+
+			}
+			// Jump if higher
+			case 11: {
+
+			}
+			// Jump subroutine
+			case 12: {
+
+			}
+			// Return subroutine
+			case 13: {
+
+			}
+
+			}// end switch
 		}
 
 	}
