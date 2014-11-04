@@ -1,6 +1,6 @@
 LOAD 5
 LOAD 5
 LOAD 6
-MOV R0 R2
+ADD R0 R0
 
 

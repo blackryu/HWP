@@ -9,7 +9,7 @@ import java.util.Stack;
 public class VM {
 
 	private int register[] = new int[16];
-
+	private int rx, ry;
 	private int programCounter = 0;
 
 	private int memory[] = new int[4096];
@@ -36,6 +36,7 @@ public class VM {
 		String line = "";
 		try {
 			while ((line = bufferedReader.readLine()) != null) {
+				// write commands in memory
 				memory[programCounter] = returnOpCode(line);
 				programCounter++;
 			}
@@ -71,23 +72,26 @@ public class VM {
 			System.out.println("LOAD gefunden!");
 			opCode = Integer.parseInt(commandSplitted[1]);
 			// Shift for R0 and LOAD
-			opCode = opCode << 5;
+			opCode = opCode << 4;
 			// LOAD Bit
 			opCode += 1;
 			return opCode;
 		}
 		case "MOV": {
-			
-//			int dest = Integer.parseInt(commandSplitted[1]);
-//			int source = Integer.parseInt(commandSplitted[2]);
-		
-			
+
+			// int dest = Integer.parseInt(commandSplitted[1]);
+			// int source = Integer.parseInt(commandSplitted[2]);
+
 			return opCode;
 		}
 		case "ADD": {
-			// ADD Rx,Ry => Rx = Rx + Ry
-			
-			
+			rx = commandSplitted[1].charAt(1) - '0';
+			ry = commandSplitted[2].charAt(1) - '0';
+			opCode += ry;
+			opCode <<= 4;
+			opCode += rx;
+			opCode <<= 4;
+			opCode += 3;
 			return opCode;
 		}
 		case "SUB": {
@@ -141,16 +145,17 @@ public class VM {
 		//
 		for (programCounter = 0; programCounter < 4095; programCounter++) {
 			int command = filledMemory[programCounter];
-			switch (command & 15) {
+			switch (command & 0b0000_0000_0000_1111) {
 			case 0: {
 				break;
 			}
 			// LOAD
 			case 1: {
 				// Mask value
-				register[0] = command & 65520;
+				register[0] = command & 0b1111_1111_1111_0000;
 				// shift back
-				register[0] = register[0] >> 5;
+				register[0] = register[0] >> 4;
+				System.out.println(register[0]);
 				break;
 			}
 			// MOV
