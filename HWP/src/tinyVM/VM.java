@@ -69,7 +69,6 @@ public class VM {
 			return 0;
 		}
 		case "LOAD": {
-			System.out.println("LOAD gefunden!");
 			opCode = Integer.parseInt(commandSplitted[1]);
 			// Shift for R0 and LOAD
 			opCode = opCode << 4;
@@ -91,19 +90,40 @@ public class VM {
 				return opCode;
 			}
 			// move from mem to reg
-			else if ( commandSplitted[1].charAt(0) == 'R' && commandSplitted[2].charAt(0) == '('){
-				
+			else if (commandSplitted[1].charAt(0) == 'R'
+					&& commandSplitted[2].charAt(0) == '(') {
+				rx = commandSplitted[1].charAt(1) - '0';
+				ry = commandSplitted[2].charAt(2) - '0';
+				opCode += 1;
+				opCode <<= 4;
+				opCode += ry;
+				opCode <<= 4;
+				opCode += rx;
+				opCode <<= 4;
+				opCode += 2;
+				return opCode;
+
 			}
 			// move from reg to mem
-			else if ( commandSplitted[1].charAt(0) == '(' && commandSplitted[2].charAt(0) == 'R'){
-				
+			else if (commandSplitted[1].charAt(0) == '('
+					&& commandSplitted[2].charAt(0) == 'R') {
+				rx = commandSplitted[1].charAt(2) - '0';
+				ry = commandSplitted[2].charAt(1) - '0';
+				opCode += 2;
+				opCode <<= 4;
+				opCode += ry;
+				opCode <<= 4;
+				opCode += rx;
+				opCode <<= 4;
+				opCode += 2;
+				return opCode;
 			}
-			
+
 			// move from memory to memory
 			else if (commandSplitted[1].charAt(0) == '('
 					&& commandSplitted[2].charAt(0) == '(') {
-				rx = commandSplitted[1].charAt(1) - '0';
-				ry = commandSplitted[2].charAt(1) - '0';
+				rx = commandSplitted[1].charAt(2) - '0';
+				ry = commandSplitted[2].charAt(2) - '0';
 				opCode += 3;
 				opCode <<= 4;
 				opCode += ry;
@@ -113,10 +133,6 @@ public class VM {
 				opCode += 2;
 				return opCode;
 			}
-			
-			
-			// int dest = Integer.parseInt(commandSplitted[1]);
-			// int source = Integer.parseInt(commandSplitted[2]);
 
 			return opCode;
 		}
@@ -161,11 +177,17 @@ public class VM {
 			return opCode;
 		}
 		case "PUSH": {
-			// PUSH Rx => Rx on the Stack
+			rx = commandSplitted[1].charAt(1) - '0';
+			opCode += rx;
+			opCode <<= 4;
+			opCode += 7;
 			return opCode;
 		}
 		case "POP": {
-			// POP Rx => Rx from Stack
+			rx = commandSplitted[1].charAt(1) - '0';
+			opCode += rx;
+			opCode <<= 4;
+			opCode += 8;
 			return opCode;
 		}
 		case "JMP": {
@@ -206,9 +228,7 @@ public class VM {
 			// LOAD
 			case 1: {
 				// Mask value
-				register[0] = command & 0b1111_1111_1111_0000;
-				// shift back
-				register[0] = register[0] >> 4;
+				register[0] = (command & 0b1111_1111_1111_0000) >> 4;
 				System.out.println("Register 0: " + register[0]);
 				break;
 			}
@@ -223,17 +243,32 @@ public class VM {
 					break;
 				}
 				// from mem to reg
-				else if (command >> 12 == 1){
-					
+				else if (command >> 12 == 1) {
+					rx = (command & 0b0000_0000_1111_0000) >> 4;
+					ry = (command & 0b0000_1111_0000_0000) >> 8;
+					register[rx] = memory[register[ry]];
+					System.out.println("Register " + register[rx] + ": "
+							+ register[rx]);
+					break;
 				}
 				// reg to mem
-				else if (command >> 12 == 2){
-					
+				else if (command >> 12 == 2) {
+					rx = (command & 0b0000_0000_1111_0000) >> 4;
+					ry = (command & 0b0000_1111_0000_0000) >> 8;
+					memory[register[rx]] = register[ry];
+					System.out.println("Memory " + register[rx] + ": "
+							+ memory[register[rx]]);
+					break;
 				}
 				// memory to memory
-				else  {
-
-				} 
+				else {
+					rx = (command & 0b0000_0000_1111_0000) >> 4;
+					ry = (command & 0b0000_1111_0000_0000) >> 8;
+					memory[register[rx]] = memory[register[ry]];
+					System.out.println("Memory " + register[rx] + ": "
+							+ memory[register[rx]]);
+					break;
+				}
 			}
 			// ADD
 			case 3: {
@@ -274,11 +309,16 @@ public class VM {
 			}
 			// PUSH
 			case 7: {
-
+				rx = (command & 0b0000_0000_1111_0000) >> 4;
+				registerStack.push(register[rx]);
+				break;
 			}
 			// POP
 			case 8: {
-
+				rx = (command & 0b0000_0000_1111_0000) >> 4;
+				if (!registerStack.isEmpty())
+					register[rx] = registerStack.pop();
+				break;
 			}
 			// Jump
 			case 9: {
