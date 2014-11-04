@@ -78,7 +78,43 @@ public class VM {
 			return opCode;
 		}
 		case "MOV": {
-
+			// move from register to register
+			if (commandSplitted[1].charAt(0) == 'R'
+					&& commandSplitted[2].charAt(0) == 'R') {
+				rx = commandSplitted[1].charAt(1) - '0';
+				ry = commandSplitted[2].charAt(1) - '0';
+				opCode += ry;
+				opCode <<= 4;
+				opCode += rx;
+				opCode <<= 4;
+				opCode += 2;
+				return opCode;
+			}
+			// move from mem to reg
+			else if ( commandSplitted[1].charAt(0) == 'R' && commandSplitted[2].charAt(0) == '('){
+				
+			}
+			// move from reg to mem
+			else if ( commandSplitted[1].charAt(0) == '(' && commandSplitted[2].charAt(0) == 'R'){
+				
+			}
+			
+			// move from memory to memory
+			else if (commandSplitted[1].charAt(0) == '('
+					&& commandSplitted[2].charAt(0) == '(') {
+				rx = commandSplitted[1].charAt(1) - '0';
+				ry = commandSplitted[2].charAt(1) - '0';
+				opCode += 3;
+				opCode <<= 4;
+				opCode += ry;
+				opCode <<= 4;
+				opCode += rx;
+				opCode <<= 4;
+				opCode += 2;
+				return opCode;
+			}
+			
+			
 			// int dest = Integer.parseInt(commandSplitted[1]);
 			// int source = Integer.parseInt(commandSplitted[2]);
 
@@ -95,15 +131,33 @@ public class VM {
 			return opCode;
 		}
 		case "SUB": {
-			// SUB Rx,Ry => Rx = Rx - Ry
+			rx = commandSplitted[1].charAt(1) - '0';
+			ry = commandSplitted[2].charAt(1) - '0';
+			opCode += ry;
+			opCode <<= 4;
+			opCode += rx;
+			opCode <<= 4;
+			opCode += 4;
 			return opCode;
 		}
 		case "MUL": {
-			// MUL Rx,Ry => Rx = Rx * Ry
+			rx = commandSplitted[1].charAt(1) - '0';
+			ry = commandSplitted[2].charAt(1) - '0';
+			opCode += ry;
+			opCode <<= 4;
+			opCode += rx;
+			opCode <<= 4;
+			opCode += 5;
 			return opCode;
 		}
 		case "DIV": {
-			// DIV Rx,Ry => Rx = Rx / Ry
+			rx = commandSplitted[1].charAt(1) - '0';
+			ry = commandSplitted[2].charAt(1) - '0';
+			opCode += ry;
+			opCode <<= 4;
+			opCode += rx;
+			opCode <<= 4;
+			opCode += 6;
 			return opCode;
 		}
 		case "PUSH": {
@@ -155,28 +209,68 @@ public class VM {
 				register[0] = command & 0b1111_1111_1111_0000;
 				// shift back
 				register[0] = register[0] >> 4;
-				System.out.println(register[0]);
+				System.out.println("Register 0: " + register[0]);
 				break;
 			}
 			// MOV
 			case 2: {
+				// reg to reg
+				if (command >> 12 == 0) {
+					rx = (command & 0b0000_0000_1111_0000) >> 4;
+					ry = (command & 0b0000_1111_0000_0000) >> 8;
+					register[rx] = register[ry];
+					System.out.println("Register " + rx + ": " + register[rx]);
+					break;
+				}
+				// from mem to reg
+				else if (command >> 12 == 1){
+					
+				}
+				// reg to mem
+				else if (command >> 12 == 2){
+					
+				}
+				// memory to memory
+				else  {
 
+				} 
 			}
 			// ADD
 			case 3: {
-
+				rx = (command & 0b0000_0000_1111_0000) >> 4;
+				ry = (command & 0b0000_1111_0000_0000) >> 8;
+				register[rx] += register[ry];
+				System.out.println("Register " + rx + " nach ADD: "
+						+ register[rx]);
+				break;
 			}
 			// SUB
 			case 4: {
+				rx = (command & 0b0000_0000_1111_0000) >> 4;
+				ry = (command & 0b0000_1111_0000_0000) >> 8;
+				register[rx] -= register[ry];
+				System.out.println("Register " + rx + " nach SUB: "
+						+ register[rx]);
+				break;
 
 			}
 			// MUL
 			case 5: {
-
+				rx = (command & 0b0000_0000_1111_0000) >> 4;
+				ry = (command & 0b0000_1111_0000_0000) >> 8;
+				register[rx] *= register[ry];
+				System.out.println("Register " + rx + " nach MUL: "
+						+ register[rx]);
+				break;
 			}
 			// DIV
 			case 6: {
-
+				rx = (command & 0b0000_0000_1111_0000) >> 4;
+				ry = (command & 0b0000_1111_0000_0000) >> 8;
+				register[rx] /= register[ry];
+				System.out.println("Register " + rx + " nach DIV: "
+						+ register[rx]);
+				break;
 			}
 			// PUSH
 			case 7: {
