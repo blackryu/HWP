@@ -191,7 +191,9 @@ public class VM {
 			return opCode;
 		}
 		case "JMP": {
-			// JMP #num => Jumps to Memory @#num
+			opCode = Integer.parseInt(commandSplitted[1]);
+			opCode <<= 4;
+			opCode += 9;
 			return opCode;
 		}
 		case "JIZ": {
@@ -207,7 +209,8 @@ public class VM {
 			return opCode;
 		}
 		case "RTS": {
-
+			System.out.println("RTS gefunden");
+			opCode = 13;
 			return opCode;
 		}
 
@@ -322,7 +325,12 @@ public class VM {
 			}
 			// Jump
 			case 9: {
-
+				System.out.println(programCounter);
+				subroutineStack.push(programCounter);
+				programCounter = (command & 0b1111_1111_1111_0000) >> 4;
+				programCounter -= 1;
+				System.out.println(programCounter);
+				break;
 			}
 			// Jump if zero
 			case 10: {
@@ -338,7 +346,14 @@ public class VM {
 			}
 			// Return subroutine
 			case 13: {
-
+				if (!subroutineStack.isEmpty())
+					programCounter = subroutineStack.pop();
+				System.out.println(programCounter);
+				break;
+			}
+			default:{
+				
+				break;
 			}
 
 			}// end switch
