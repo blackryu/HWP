@@ -11,22 +11,20 @@ public class VM {
 	private int register[] = new int[16];
 	private int rx, ry;
 	private int programCounter = 0;
-
 	private int memory[] = new int[4096];
+
+	Stack<Integer> registerStack = new Stack<Integer>();
+	Stack<Integer> subroutineStack = new Stack<Integer>();
 
 	public int getMemory(int i) {
 		return memory[i];
 	}
-
-	Stack<Integer> registerStack = new Stack<Integer>();
-	Stack<Integer> subroutineStack = new Stack<Integer>();
 
 	public void readFile(String file) {
 		// initialize FileReader and BufferedReader
 		FileReader fileReader = null;
 		try {
 			fileReader = new FileReader(file);
-
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -37,6 +35,7 @@ public class VM {
 		try {
 			while ((line = bufferedReader.readLine()) != null) {
 				// write commands in memory
+				if(line != "")
 				memory[programCounter] = returnOpCode(line);
 				programCounter++;
 			}
