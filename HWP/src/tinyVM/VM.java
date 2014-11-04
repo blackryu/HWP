@@ -69,17 +69,17 @@ public class VM {
 		}
 		case "LOAD": {
 			System.out.println("LOAD gefunden!");
-			int value = Integer.parseInt(commandSplitted[1]);
+			opCode = Integer.parseInt(commandSplitted[1]);
 			// Shift for R0 and LOAD
-			value = value << 5;
+			opCode = opCode << 5;
 			// LOAD Bit
-			value += 1;
-			return value;
+			opCode += 1;
+			return opCode;
 		}
 		case "MOV": {
 			
-			int dest = Integer.parseInt(commandSplitted[1]);
-			int source = Integer.parseInt(commandSplitted[2]);
+//			int dest = Integer.parseInt(commandSplitted[1]);
+//			int source = Integer.parseInt(commandSplitted[2]);
 		
 			
 			return opCode;
@@ -207,7 +207,8 @@ public class VM {
 
 	}
 
-	public void runVM() {
+	public void runVM(String file) {
+		readFile(file);
 		executeOpCode(memory);
 	}
 }
