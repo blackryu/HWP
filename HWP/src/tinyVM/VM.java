@@ -33,10 +33,11 @@ public class VM {
 		// read file and call returnOpCode
 		String line = "";
 		try {
+			// write commands in memory
 			while ((line = bufferedReader.readLine()) != null) {
-				// write commands in memory
-				if(line != "")
-				memory[programCounter] = returnOpCode(line);
+				// skip empty lines
+				if (line != "")
+					memory[programCounter] = returnOpCode(line);
 				programCounter++;
 			}
 		} catch (IOException e1) {
@@ -79,6 +80,7 @@ public class VM {
 			// move from register to register
 			if (commandSplitted[1].charAt(0) == 'R'
 					&& commandSplitted[2].charAt(0) == 'R') {
+
 				rx = commandSplitted[1].charAt(1) - '0';
 				ry = commandSplitted[2].charAt(1) - '0';
 				opCode += ry;
@@ -91,6 +93,7 @@ public class VM {
 			// move from mem to reg
 			else if (commandSplitted[1].charAt(0) == 'R'
 					&& commandSplitted[2].charAt(0) == '(') {
+
 				rx = commandSplitted[1].charAt(1) - '0';
 				ry = commandSplitted[2].charAt(2) - '0';
 				opCode += 1;
@@ -106,6 +109,7 @@ public class VM {
 			// move from reg to mem
 			else if (commandSplitted[1].charAt(0) == '('
 					&& commandSplitted[2].charAt(0) == 'R') {
+
 				rx = commandSplitted[1].charAt(2) - '0';
 				ry = commandSplitted[2].charAt(1) - '0';
 				opCode += 2;
@@ -121,6 +125,7 @@ public class VM {
 			// move from memory to memory
 			else if (commandSplitted[1].charAt(0) == '('
 					&& commandSplitted[2].charAt(0) == '(') {
+
 				rx = commandSplitted[1].charAt(2) - '0';
 				ry = commandSplitted[2].charAt(2) - '0';
 				opCode += 3;
@@ -214,22 +219,22 @@ public class VM {
 			return opCode;
 		}
 		case "RTS": {
-			System.out.println("RTS gefunden");
-			opCode = 13;
-			return opCode;
+			return 13;
 		}
 
-		}
+		}// end switch
 		return opCode;
 	}
 
 	public void executeOpCode(int[] filledMemory) {
 		// go to first memory entry
 		programCounter = 0;
-		//
+		// run all opCodes
 		for (programCounter = 0; programCounter < 4095; programCounter++) {
 			int command = filledMemory[programCounter];
+
 			switch (command & 0b0000_0000_0000_1111) {
+			// NOP
 			case 0: {
 				break;
 			}
