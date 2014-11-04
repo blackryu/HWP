@@ -197,15 +197,21 @@ public class VM {
 			return opCode;
 		}
 		case "JIZ": {
-			// JMZ R0
+			opCode = Integer.parseInt(commandSplitted[1]);
+			opCode <<= 4;
+			opCode += 10;
 			return opCode;
 		}
 		case "JIH": {
-
+			opCode = Integer.parseInt(commandSplitted[1]);
+			opCode <<= 4;
+			opCode += 11;
 			return opCode;
 		}
 		case "JSR": {
-
+			opCode = Integer.parseInt(commandSplitted[1]);
+			opCode <<= 4;
+			opCode += 12;
 			return opCode;
 		}
 		case "RTS": {
@@ -326,7 +332,6 @@ public class VM {
 			// Jump
 			case 9: {
 				System.out.println(programCounter);
-				subroutineStack.push(programCounter);
 				programCounter = (command & 0b1111_1111_1111_0000) >> 4;
 				programCounter -= 1;
 				System.out.println(programCounter);
@@ -334,15 +339,30 @@ public class VM {
 			}
 			// Jump if zero
 			case 10: {
-
+				if (register[0] == 0) {
+					programCounter = (command & 0b1111_1111_1111_0000) >> 4;
+					programCounter -= 1;
+					break;
+				} else
+					break;
 			}
 			// Jump if higher
 			case 11: {
-
+				if (register[0] > 0) {
+					programCounter = (command & 0b1111_1111_1111_0000) >> 4;
+					programCounter -= 1;
+					break;
+				} else
+					break;
 			}
 			// Jump subroutine
 			case 12: {
-
+				System.out.println(programCounter);
+				subroutineStack.push(programCounter);
+				programCounter = (command & 0b1111_1111_1111_0000) >> 4;
+				programCounter -= 1;
+				System.out.println(programCounter);
+				break;
 			}
 			// Return subroutine
 			case 13: {
@@ -351,8 +371,8 @@ public class VM {
 				System.out.println(programCounter);
 				break;
 			}
-			default:{
-				
+			default: {
+
 				break;
 			}
 
