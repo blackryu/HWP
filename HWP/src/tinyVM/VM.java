@@ -63,6 +63,8 @@ public class VM {
 		String[] commandSplitted = new String[0];
 		commandSplitted = command.split(" ");
 		int opCode = 0;
+		rx = 0;
+		ry = 0;
 
 		switch (commandSplitted[0]) {
 		case "NOP": {
@@ -81,8 +83,9 @@ public class VM {
 			if (commandSplitted[1].charAt(0) == 'R'
 					&& commandSplitted[2].charAt(0) == 'R') {
 
-				rx = commandSplitted[1].charAt(1) - '0';
-				ry = commandSplitted[2].charAt(1) - '0';
+				rx = computeReg(commandSplitted[1]);
+				ry = computeReg(commandSplitted[2]);
+
 				opCode += ry;
 				opCode <<= 4;
 				opCode += rx;
@@ -94,8 +97,9 @@ public class VM {
 			else if (commandSplitted[1].charAt(0) == 'R'
 					&& commandSplitted[2].charAt(0) == '(') {
 
-				rx = commandSplitted[1].charAt(1) - '0';
-				ry = commandSplitted[2].charAt(2) - '0';
+				rx = computeReg(commandSplitted[1]);
+				ry = computeMem(commandSplitted[2]);
+
 				opCode += 1;
 				opCode <<= 4;
 				opCode += ry;
@@ -110,8 +114,9 @@ public class VM {
 			else if (commandSplitted[1].charAt(0) == '('
 					&& commandSplitted[2].charAt(0) == 'R') {
 
-				rx = commandSplitted[1].charAt(2) - '0';
-				ry = commandSplitted[2].charAt(1) - '0';
+				rx = computeMem(commandSplitted[1]);
+				ry = computeReg(commandSplitted[2]);
+
 				opCode += 2;
 				opCode <<= 4;
 				opCode += ry;
@@ -126,8 +131,9 @@ public class VM {
 			else if (commandSplitted[1].charAt(0) == '('
 					&& commandSplitted[2].charAt(0) == '(') {
 
-				rx = commandSplitted[1].charAt(2) - '0';
-				ry = commandSplitted[2].charAt(2) - '0';
+				rx = computeMem(commandSplitted[1]);
+				ry = computeMem(commandSplitted[2]);
+
 				opCode += 3;
 				opCode <<= 4;
 				opCode += ry;
@@ -141,8 +147,10 @@ public class VM {
 			return opCode;
 		}
 		case "ADD": {
-			rx = commandSplitted[1].charAt(1) - '0';
-			ry = commandSplitted[2].charAt(1) - '0';
+			
+			rx = computeReg(commandSplitted[1]);
+			ry = computeReg(commandSplitted[2]);
+			
 			opCode += ry;
 			opCode <<= 4;
 			opCode += rx;
@@ -151,8 +159,8 @@ public class VM {
 			return opCode;
 		}
 		case "SUB": {
-			rx = commandSplitted[1].charAt(1) - '0';
-			ry = commandSplitted[2].charAt(1) - '0';
+			rx = computeReg(commandSplitted[1]);
+			ry = computeReg(commandSplitted[2]);
 			opCode += ry;
 			opCode <<= 4;
 			opCode += rx;
@@ -161,8 +169,8 @@ public class VM {
 			return opCode;
 		}
 		case "MUL": {
-			rx = commandSplitted[1].charAt(1) - '0';
-			ry = commandSplitted[2].charAt(1) - '0';
+			rx = computeReg(commandSplitted[1]);
+			ry = computeReg(commandSplitted[2]);
 			opCode += ry;
 			opCode <<= 4;
 			opCode += rx;
@@ -171,8 +179,8 @@ public class VM {
 			return opCode;
 		}
 		case "DIV": {
-			rx = commandSplitted[1].charAt(1) - '0';
-			ry = commandSplitted[2].charAt(1) - '0';
+			rx = computeReg(commandSplitted[1]);
+			ry = computeReg(commandSplitted[2]);
 			opCode += ry;
 			opCode <<= 4;
 			opCode += rx;
@@ -181,14 +189,14 @@ public class VM {
 			return opCode;
 		}
 		case "PUSH": {
-			rx = commandSplitted[1].charAt(1) - '0';
+			rx = computeReg(commandSplitted[1]);
 			opCode += rx;
 			opCode <<= 4;
 			opCode += 7;
 			return opCode;
 		}
 		case "POP": {
-			rx = commandSplitted[1].charAt(1) - '0';
+			rx = computeReg(commandSplitted[1]);
 			opCode += rx;
 			opCode <<= 4;
 			opCode += 8;
@@ -229,6 +237,8 @@ public class VM {
 	public void executeOpCode(int[] filledMemory) {
 		// go to first memory entry
 		programCounter = 0;
+		rx = 0;
+		ry = 0;
 		// run all opCodes
 		for (programCounter = 0; programCounter < 4095; programCounter++) {
 			int command = filledMemory[programCounter];
@@ -242,7 +252,7 @@ public class VM {
 			case 1: {
 				// Mask value
 				register[0] = (command & 0b1111_1111_1111_0000) >> 4;
-				System.out.println("Register 0: " + register[0]);
+				System.out.println("LOAD: Register 0: " + register[0]);
 				break;
 			}
 			// MOV
@@ -252,7 +262,8 @@ public class VM {
 					rx = (command & 0b0000_0000_1111_0000) >> 4;
 					ry = (command & 0b0000_1111_0000_0000) >> 8;
 					register[rx] = register[ry];
-					System.out.println("Register " + rx + ": " + register[rx]);
+					System.out.println("MOV: Register " + rx + ": "
+							+ register[rx]);
 					break;
 				}
 				// from mem to reg
@@ -260,7 +271,7 @@ public class VM {
 					rx = (command & 0b0000_0000_1111_0000) >> 4;
 					ry = (command & 0b0000_1111_0000_0000) >> 8;
 					register[rx] = memory[register[ry]];
-					System.out.println("Register " + register[rx] + ": "
+					System.out.println("MOV: Register " + register[rx] + ": "
 							+ register[rx]);
 					break;
 				}
@@ -269,7 +280,7 @@ public class VM {
 					rx = (command & 0b0000_0000_1111_0000) >> 4;
 					ry = (command & 0b0000_1111_0000_0000) >> 8;
 					memory[register[rx]] = register[ry];
-					System.out.println("Memory " + register[rx] + ": "
+					System.out.println("MOV: Memory " + register[rx] + ": "
 							+ memory[register[rx]]);
 					break;
 				}
@@ -278,7 +289,7 @@ public class VM {
 					rx = (command & 0b0000_0000_1111_0000) >> 4;
 					ry = (command & 0b0000_1111_0000_0000) >> 8;
 					memory[register[rx]] = memory[register[ry]];
-					System.out.println("Memory " + register[rx] + ": "
+					System.out.println("MOV: Memory " + register[rx] + ": "
 							+ memory[register[rx]]);
 					break;
 				}
@@ -335,10 +346,10 @@ public class VM {
 			}
 			// Jump
 			case 9: {
-				System.out.println(programCounter);
+				System.out.println("Vor JMP: " + programCounter);
 				programCounter = (command & 0b1111_1111_1111_0000) >> 4;
 				programCounter -= 1;
-				System.out.println(programCounter);
+				System.out.println("Nach JMP: " + (programCounter + 1));
 				break;
 			}
 			// Jump if zero
@@ -361,18 +372,20 @@ public class VM {
 			}
 			// Jump subroutine
 			case 12: {
-				System.out.println(programCounter);
+				System.out.println("Vor JSR: " + programCounter);
 				subroutineStack.push(programCounter);
 				programCounter = (command & 0b1111_1111_1111_0000) >> 4;
 				programCounter -= 1;
-				System.out.println(programCounter);
+				System.out.println("Nach JSR: " + (programCounter + 1));
 				break;
 			}
 			// Return subroutine
 			case 13: {
 				if (!subroutineStack.isEmpty())
 					programCounter = subroutineStack.pop();
-				System.out.println(programCounter);
+				else
+					System.exit(0);
+				System.out.println("Nach RTS: " + programCounter);
 				break;
 			}
 			default: {
@@ -389,4 +402,27 @@ public class VM {
 		readFile(file);
 		executeOpCode(memory);
 	}
+
+	public int computeReg(String part) {
+		int reg = 0;
+		if (part.length() == 3) {
+			for (int i = 1; i <= 2; i++) {
+				reg = reg * 10 + part.charAt(i) - '0';
+			}
+		} else
+			reg = part.charAt(1) - '0';
+		return reg;
+	}
+
+	public int computeMem(String part) {
+		int reg = 0;
+		if (part.length() == 5) {
+			for (int i = 2; i <= 3; i++) {
+				reg = reg * 10 + part.charAt(i) - '0';
+			}
+		} else
+			reg = part.charAt(2) - '0';
+		return reg;
+	}
+
 }
