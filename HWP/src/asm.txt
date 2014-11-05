@@ -1,40 +1,27 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 LOAD 1000
 MOV R15 R0
-
-
-JSR 30
-
-
-
-
-
-
-
-
-
-
-LOAD 0
-MOV R1 R0
 LOAD 1
-MOV R2 R0
+MOV R14 R0
+MOV R6 R0
+LOAD 0
+MOV R5 R0
+MOV R4 R0
+JSR 14
+RTS
+
+
+
+
 LOAD 20
-JIH 40
+MOV (R15) R5
+MOV R5 R6
+MOV R7 R6
+ADD R6 R4
+MOV R4 R7
+
+ADD R15 R14
+SUB R0 R14
 
 
-
+JIH 15
 RTS

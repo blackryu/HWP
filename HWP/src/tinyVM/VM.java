@@ -147,10 +147,10 @@ public class VM {
 			return opCode;
 		}
 		case "ADD": {
-			
+
 			rx = computeReg(commandSplitted[1]);
 			ry = computeReg(commandSplitted[2]);
-			
+
 			opCode += ry;
 			opCode <<= 4;
 			opCode += rx;
@@ -252,7 +252,6 @@ public class VM {
 			case 1: {
 				// Mask value
 				register[0] = (command & 0b1111_1111_1111_0000) >> 4;
-				System.out.println("LOAD: Register 0: " + register[0]);
 				break;
 			}
 			// MOV
@@ -262,8 +261,7 @@ public class VM {
 					rx = (command & 0b0000_0000_1111_0000) >> 4;
 					ry = (command & 0b0000_1111_0000_0000) >> 8;
 					register[rx] = register[ry];
-					System.out.println("MOV: Register " + rx + ": "
-							+ register[rx]);
+
 					break;
 				}
 				// from mem to reg
@@ -271,8 +269,7 @@ public class VM {
 					rx = (command & 0b0000_0000_1111_0000) >> 4;
 					ry = (command & 0b0000_1111_0000_0000) >> 8;
 					register[rx] = memory[register[ry]];
-					System.out.println("MOV: Register " + register[rx] + ": "
-							+ register[rx]);
+
 					break;
 				}
 				// reg to mem
@@ -280,8 +277,7 @@ public class VM {
 					rx = (command & 0b0000_0000_1111_0000) >> 4;
 					ry = (command & 0b0000_1111_0000_0000) >> 8;
 					memory[register[rx]] = register[ry];
-					System.out.println("MOV: Memory " + register[rx] + ": "
-							+ memory[register[rx]]);
+
 					break;
 				}
 				// memory to memory
@@ -289,8 +285,7 @@ public class VM {
 					rx = (command & 0b0000_0000_1111_0000) >> 4;
 					ry = (command & 0b0000_1111_0000_0000) >> 8;
 					memory[register[rx]] = memory[register[ry]];
-					System.out.println("MOV: Memory " + register[rx] + ": "
-							+ memory[register[rx]]);
+
 					break;
 				}
 			}
@@ -299,8 +294,7 @@ public class VM {
 				rx = (command & 0b0000_0000_1111_0000) >> 4;
 				ry = (command & 0b0000_1111_0000_0000) >> 8;
 				register[rx] += register[ry];
-				System.out.println("Register " + rx + " nach ADD: "
-						+ register[rx]);
+
 				break;
 			}
 			// SUB
@@ -308,8 +302,7 @@ public class VM {
 				rx = (command & 0b0000_0000_1111_0000) >> 4;
 				ry = (command & 0b0000_1111_0000_0000) >> 8;
 				register[rx] -= register[ry];
-				System.out.println("Register " + rx + " nach SUB: "
-						+ register[rx]);
+				System.out.println(register[rx]);
 				break;
 
 			}
@@ -318,17 +311,15 @@ public class VM {
 				rx = (command & 0b0000_0000_1111_0000) >> 4;
 				ry = (command & 0b0000_1111_0000_0000) >> 8;
 				register[rx] *= register[ry];
-				System.out.println("Register " + rx + " nach MUL: "
-						+ register[rx]);
 				break;
 			}
 			// DIV
 			case 6: {
 				rx = (command & 0b0000_0000_1111_0000) >> 4;
 				ry = (command & 0b0000_1111_0000_0000) >> 8;
-				register[rx] /= register[ry];
-				System.out.println("Register " + rx + " nach DIV: "
-						+ register[rx]);
+				if (register[ry] != 0)
+					register[rx] /= register[ry];
+
 				break;
 			}
 			// PUSH
@@ -346,10 +337,8 @@ public class VM {
 			}
 			// Jump
 			case 9: {
-				System.out.println("Vor JMP: " + programCounter);
 				programCounter = (command & 0b1111_1111_1111_0000) >> 4;
 				programCounter -= 1;
-				System.out.println("Nach JMP: " + (programCounter + 1));
 				break;
 			}
 			// Jump if zero
@@ -372,11 +361,9 @@ public class VM {
 			}
 			// Jump subroutine
 			case 12: {
-				System.out.println("Vor JSR: " + programCounter);
 				subroutineStack.push(programCounter);
 				programCounter = (command & 0b1111_1111_1111_0000) >> 4;
 				programCounter -= 1;
-				System.out.println("Nach JSR: " + (programCounter + 1));
 				break;
 			}
 			// Return subroutine
@@ -384,9 +371,8 @@ public class VM {
 				if (!subroutineStack.isEmpty())
 					programCounter = subroutineStack.pop();
 				else
-					System.exit(0);
-				System.out.println("Nach RTS: " + programCounter);
-				break;
+					return;
+					break;
 			}
 			default: {
 
