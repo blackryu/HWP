@@ -261,7 +261,6 @@ public class VM {
 					rx = (command & 0b0000_0000_1111_0000) >> 4;
 					ry = (command & 0b0000_1111_0000_0000) >> 8;
 					register[rx] = register[ry];
-
 					break;
 				}
 				// from mem to reg
@@ -269,7 +268,6 @@ public class VM {
 					rx = (command & 0b0000_0000_1111_0000) >> 4;
 					ry = (command & 0b0000_1111_0000_0000) >> 8;
 					register[rx] = memory[register[ry]];
-
 					break;
 				}
 				// reg to mem
@@ -277,7 +275,6 @@ public class VM {
 					rx = (command & 0b0000_0000_1111_0000) >> 4;
 					ry = (command & 0b0000_1111_0000_0000) >> 8;
 					memory[register[rx]] = register[ry];
-
 					break;
 				}
 				// memory to memory
@@ -285,7 +282,6 @@ public class VM {
 					rx = (command & 0b0000_0000_1111_0000) >> 4;
 					ry = (command & 0b0000_1111_0000_0000) >> 8;
 					memory[register[rx]] = memory[register[ry]];
-
 					break;
 				}
 			}
@@ -294,7 +290,6 @@ public class VM {
 				rx = (command & 0b0000_0000_1111_0000) >> 4;
 				ry = (command & 0b0000_1111_0000_0000) >> 8;
 				register[rx] += register[ry];
-
 				break;
 			}
 			// SUB
@@ -302,7 +297,6 @@ public class VM {
 				rx = (command & 0b0000_0000_1111_0000) >> 4;
 				ry = (command & 0b0000_1111_0000_0000) >> 8;
 				register[rx] -= register[ry];
-				System.out.println(register[rx]);
 				break;
 
 			}
@@ -319,7 +313,6 @@ public class VM {
 				ry = (command & 0b0000_1111_0000_0000) >> 8;
 				if (register[ry] != 0)
 					register[rx] /= register[ry];
-
 				break;
 			}
 			// PUSH
@@ -372,7 +365,7 @@ public class VM {
 					programCounter = subroutineStack.pop();
 				else
 					return;
-					break;
+				break;
 			}
 			default: {
 
