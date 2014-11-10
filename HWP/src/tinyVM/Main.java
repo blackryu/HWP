@@ -6,7 +6,7 @@ public class Main {
 		VM vm = new VM();
 		vm.runVM("../HWP/src/asm.txt"); 
 		
-		for (int i = 1; i < 1022; i++)
+		for (int i = 1000; i < 1022; i++)
 			System.out.println("Stelle " + i + ": " + vm.getMemory(i));
 
 	}
