@@ -4,6 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Stack;
 
 public class VM {
@@ -12,6 +16,10 @@ public class VM {
 	private int rx, ry;
 	private int programCounter = 0;
 	private int memory[] = new int[4096];
+	private int profilerArray[] = new int[4096];
+	private String linesOfCode[] = new String[4096]; // assembler commands
+	private int profilerCounter = 0;
+	private int cycles;
 
 	Stack<Integer> registerStack = new Stack<Integer>();
 	Stack<Integer> subroutineStack = new Stack<Integer>();
@@ -35,8 +43,11 @@ public class VM {
 		try {
 			// write commands in memory
 			while ((line = bufferedReader.readLine()) != null) {
-				if (line != "" || line.charAt(0) != '/')
+				if (line != "" || line.charAt(0) != '/') {
 					memory[programCounter] = returnOpCode(line);
+				}
+				// save command lines
+				linesOfCode[programCounter] = line;
 				programCounter++;
 			}
 		} catch (IOException e1) {
@@ -234,14 +245,22 @@ public class VM {
 	}
 
 	public void executeOpCode(int[] filledMemory) {
+		boolean fileWritten = false;
 		// go to first memory entry
 		programCounter = 0;
 		rx = 0;
 		ry = 0;
 		// run all opCodes
 		for (programCounter = 0; programCounter < 4095; programCounter++) {
-			int command = filledMemory[programCounter];
+			if (profilerCounter == cycles && !fileWritten) {
+				writeProfilerFile();
+				fileWritten = true;
+			}
 
+			int command = filledMemory[programCounter];
+			// count number of line executions
+			profilerArray[programCounter]++;
+			profilerCounter++;
 			switch (command & 0b0000_0000_0000_1111) {
 			// NOP
 			case 0: {
@@ -281,6 +300,7 @@ public class VM {
 					rx = (command & 0b0000_0000_1111_0000) >> 4;
 					ry = (command & 0b0000_1111_0000_0000) >> 8;
 					memory[register[rx]] = memory[register[ry]];
+
 					break;
 				}
 			}
@@ -362,8 +382,14 @@ public class VM {
 			case 13: {
 				if (!subroutineStack.isEmpty())
 					programCounter = subroutineStack.pop();
-				else
+				else {
+					if (!fileWritten) {
+						writeProfilerFile();
+						fileWritten = true;
+					}
 					return;
+				}
+
 				break;
 			}
 			default: {
@@ -376,9 +402,38 @@ public class VM {
 
 	}
 
-	public void runVM(String file) {
+	public void runVM(String file, int setCycles) {
 		readFile(file);
+		cycles = setCycles;
 		executeOpCode(memory);
+	}
+
+	public void writeProfilerFile() {
+		// create writer
+		PrintWriter writer = null;
+		try {
+			writer = new PrintWriter("myProfiler.txt", "UTF-8");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		
+		double percent;
+		BigDecimal value;
+		
+		for (int i = 0; i < 4096; i++) {
+			// compute percent
+			percent = ((double) profilerArray[i] / cycles * 100);
+			// format percent to two decimal places
+			value = new BigDecimal(percent);
+			value = value.setScale(2, RoundingMode.CEILING);
+			
+			if (linesOfCode[i] != null) {
+				writer.println(value + "% " + linesOfCode[i]);
+			}
+		}
+		writer.close();
 	}
 
 	public int computeReg(String part) {
