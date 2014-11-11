@@ -36,7 +36,7 @@ public class VM {
 			// write commands in memory
 			while ((line = bufferedReader.readLine()) != null) {
 				// skip empty lines
-				if (line != "")
+				if (line != "" || line.charAt(0)!='/')
 					memory[programCounter] = returnOpCode(line);
 				programCounter++;
 			}
