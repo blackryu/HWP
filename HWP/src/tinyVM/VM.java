@@ -421,14 +421,13 @@ public class VM {
 		
 		double percent;
 		BigDecimal value;
-		
+		writer.println("Perc. " + "Commands");
 		for (int i = 0; i < 4096; i++) {
 			// compute percent
 			percent = ((double) profilerArray[i] / cycles * 100);
 			// format percent to two decimal places
 			value = new BigDecimal(percent);
 			value = value.setScale(2, RoundingMode.CEILING);
-			
 			if (linesOfCode[i] != null) {
 				writer.println(value + "% " + linesOfCode[i]);
 			}
