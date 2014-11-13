@@ -70,6 +70,7 @@ public class VM {
 	}
 
 	public int returnOpCode(String command) {
+		// split assembler string
 		String[] commandSplitted = new String[0];
 		commandSplitted = command.split(" ");
 		int opCode = 0;
@@ -418,11 +419,11 @@ public class VM {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		
+
 		double percent;
 		BigDecimal value;
 		writer.println("Perc. " + "Commands");
-		for (int i = 0; i < 4096; i++) {
+		for (int i = 0; i < 4095; i++) {
 			// compute percent
 			percent = ((double) profilerArray[i] / cycles * 100);
 			// format percent to two decimal places
@@ -435,6 +436,14 @@ public class VM {
 		writer.close();
 	}
 
+	/**
+	 * This method checks if rx/ry is a two digit or one digit register when moving
+	 * from/to a register and returns the register number as int.
+	 * 
+	 * @param part
+	 *            Part of Assembler command for register
+	 * @return register number as int
+	 */
 	public int computeReg(String part) {
 		int reg = 0;
 		if (part.length() == 3) {
@@ -446,6 +455,14 @@ public class VM {
 		return reg;
 	}
 
+	/**
+	 * This method checks if rx/ry is a two digit or one digit register when moving
+	 * from/to memory and returns the register number as int.
+	 * 
+	 * @param part
+	 *            Part of Assembler command for register
+	 * @return register number as int
+	 */
 	public int computeMem(String part) {
 		int reg = 0;
 		if (part.length() == 5) {
