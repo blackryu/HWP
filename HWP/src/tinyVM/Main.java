@@ -3,7 +3,7 @@ package tinyVM;
 public class Main {
 
 	public static void main(String[] args) {
-		int cycles =1000;
+		int cycles =350000;
 		VM vm = new VM();
 		
 		vm.runVM("../HWP/src/fibAsm.txt", cycles); 

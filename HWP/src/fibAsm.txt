@@ -11,7 +11,7 @@ RTS
 //FIB
 // IF N == 0
 POP R0
-ADD R5 R14
+
 JIZ 46
 // IF N == 1
 SUB R0 R14
