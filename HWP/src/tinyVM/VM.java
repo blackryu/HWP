@@ -82,9 +82,8 @@ public class VM {
 			return 0;
 		}
 		case "LOAD": {
-			opCode = Integer.parseInt(commandSplitted[1]);
 			// Shift for R0 and LOAD
-			opCode = opCode << 4;
+			opCode = Integer.parseInt(commandSplitted[1]) << 4;
 			// LOAD Bit
 			opCode += 1;
 			return opCode;
@@ -97,12 +96,9 @@ public class VM {
 				rx = computeReg(commandSplitted[1]);
 				ry = computeReg(commandSplitted[2]);
 
-				opCode += ry;
-				opCode <<= 4;
-				opCode += rx;
-				opCode <<= 4;
-				opCode += 2;
-				return opCode;
+				opCode = (opCode + ry) << 4;
+				opCode = (opCode + rx) << 4;
+				return opCode + 2;
 			}
 			// move from mem to reg
 			else if (commandSplitted[1].charAt(0) == 'R'
@@ -111,14 +107,10 @@ public class VM {
 				rx = computeReg(commandSplitted[1]);
 				ry = computeMem(commandSplitted[2]);
 
-				opCode += 1;
-				opCode <<= 4;
-				opCode += ry;
-				opCode <<= 4;
-				opCode += rx;
-				opCode <<= 4;
-				opCode += 2;
-				return opCode;
+				opCode = (opCode + 1) << 4;
+				opCode = (opCode + ry) << 4;
+				opCode = (opCode + rx) << 4;
+				return opCode + 2;
 
 			}
 			// move from reg to mem
@@ -128,14 +120,10 @@ public class VM {
 				rx = computeMem(commandSplitted[1]);
 				ry = computeReg(commandSplitted[2]);
 
-				opCode += 2;
-				opCode <<= 4;
-				opCode += ry;
-				opCode <<= 4;
-				opCode += rx;
-				opCode <<= 4;
-				opCode += 2;
-				return opCode;
+				opCode = (opCode + 2) << 4;
+				opCode = (opCode + ry) << 4;
+				opCode = (opCode + rx) << 4;
+				return opCode + 2;
 			}
 
 			// move from memory to memory
@@ -145,97 +133,67 @@ public class VM {
 				rx = computeMem(commandSplitted[1]);
 				ry = computeMem(commandSplitted[2]);
 
-				opCode += 3;
-				opCode <<= 4;
-				opCode += ry;
-				opCode <<= 4;
-				opCode += rx;
-				opCode <<= 4;
-				opCode += 2;
-				return opCode;
+				opCode = (opCode + 3) << 4;
+				opCode = (opCode + ry) << 4;
+				opCode = (opCode + rx) << 4;
+				return opCode + 2;
 			}
 
 			return opCode;
 		}
 		case "ADD": {
-
 			rx = computeReg(commandSplitted[1]);
 			ry = computeReg(commandSplitted[2]);
-
-			opCode += ry;
-			opCode <<= 4;
-			opCode += rx;
-			opCode <<= 4;
-			opCode += 3;
-			return opCode;
+			opCode = (opCode + ry) << 4;
+			opCode = (opCode + rx) << 4;
+			return opCode + 3;
 		}
 		case "SUB": {
 			rx = computeReg(commandSplitted[1]);
 			ry = computeReg(commandSplitted[2]);
-			opCode += ry;
-			opCode <<= 4;
-			opCode += rx;
-			opCode <<= 4;
-			opCode += 4;
-			return opCode;
+			opCode = (opCode + ry) << 4;
+			opCode = (opCode + rx) << 4;
+			return opCode + 4;
 		}
 		case "MUL": {
 			rx = computeReg(commandSplitted[1]);
 			ry = computeReg(commandSplitted[2]);
-			opCode += ry;
-			opCode <<= 4;
-			opCode += rx;
-			opCode <<= 4;
-			opCode += 5;
-			return opCode;
+			opCode = (opCode + ry) << 4;
+			opCode = (opCode + rx) << 4;
+			return opCode + 5;
 		}
 		case "DIV": {
 			rx = computeReg(commandSplitted[1]);
 			ry = computeReg(commandSplitted[2]);
-			opCode += ry;
-			opCode <<= 4;
-			opCode += rx;
-			opCode <<= 4;
-			opCode += 6;
-			return opCode;
+			opCode = (opCode + ry) << 4;
+			opCode = (opCode + rx) << 4;
+			return opCode + 6;
 		}
 		case "PUSH": {
 			rx = computeReg(commandSplitted[1]);
-			opCode += rx;
-			opCode <<= 4;
-			opCode += 7;
-			return opCode;
+			opCode = (opCode + rx) << 4;
+			return opCode + 7;
 		}
 		case "POP": {
 			rx = computeReg(commandSplitted[1]);
-			opCode += rx;
-			opCode <<= 4;
-			opCode += 8;
-			return opCode;
+			opCode = (opCode + rx) << 4;
+			return opCode + 8;
 		}
 		case "JMP": {
-			opCode = Integer.parseInt(commandSplitted[1]);
-			opCode <<= 4;
-			opCode += 9;
-			return opCode;
+			opCode = Integer.parseInt(commandSplitted[1]) << 4;
+			return opCode + 9;
 		}
 		case "JIZ": {
-			opCode = Integer.parseInt(commandSplitted[1]);
-			opCode <<= 4;
-			opCode += 10;
-			return opCode;
+			opCode = Integer.parseInt(commandSplitted[1]) << 4;
+			return opCode + 10;
 		}
 		case "JIH": {
-			opCode = Integer.parseInt(commandSplitted[1]);
-			opCode <<= 4;
-			opCode += 11;
-			return opCode;
+			opCode = Integer.parseInt(commandSplitted[1]) << 4;
+			return opCode + 11;
 		}
 		case "JSR": {
-			opCode = Integer.parseInt(commandSplitted[1]);
-			opCode <<= 4;
-			opCode += 12;
-			return opCode;
+			opCode = Integer.parseInt(commandSplitted[1]) << 4;
+			return opCode + 12;
 		}
 		case "RTS": {
 			return 13;
@@ -245,7 +203,7 @@ public class VM {
 		return opCode;
 	}
 
-	public void executeOpCode(int[] filledMemory) {
+	public void executeOpCode() {
 		boolean fileWritten = false;
 		// go to first memory entry
 		programCounter = 0;
@@ -258,7 +216,7 @@ public class VM {
 				fileWritten = true;
 			}
 
-			int command = filledMemory[programCounter];
+			int command = memory[programCounter];
 			// count number of line executions
 			profilerArray[programCounter]++;
 			profilerCounter++;
@@ -301,7 +259,6 @@ public class VM {
 					rx = (command & 0b0000_0000_1111_0000) >> 4;
 					ry = (command & 0b0000_1111_0000_0000) >> 8;
 					memory[register[rx]] = memory[register[ry]];
-
 					break;
 				}
 			}
@@ -390,23 +347,20 @@ public class VM {
 					}
 					return;
 				}
-
 				break;
 			}
 			default: {
 
 				break;
 			}
-
 			}// end switch
 		}
-
 	}
 
 	public void runVM(String file, int setCycles) {
 		readFile(file);
 		cycles = setCycles;
-		executeOpCode(memory);
+		executeOpCode();
 	}
 
 	public void writeProfilerFile() {
@@ -437,8 +391,8 @@ public class VM {
 	}
 
 	/**
-	 * This method checks if rx/ry is a two digit or one digit register when moving
-	 * from/to a register and returns the register number as int.
+	 * This method checks if rx/ry is a two digit or one digit register when
+	 * moving from/to a register and returns the register number as int.
 	 * 
 	 * @param part
 	 *            Part of Assembler command for register
@@ -456,8 +410,8 @@ public class VM {
 	}
 
 	/**
-	 * This method checks if rx/ry is a two digit or one digit register when moving
-	 * from/to memory and returns the register number as int.
+	 * This method checks if rx/ry is a two digit or one digit register when
+	 * moving from/to memory and returns the register number as int.
 	 * 
 	 * @param part
 	 *            Part of Assembler command for register
